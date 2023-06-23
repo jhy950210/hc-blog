@@ -13,8 +13,8 @@ class MemberService(
 ) {
     fun findAll(): List<Member> = memberRepository.findAll()
 
-    fun signUp(request: MemberSignUpRequest) {
+    fun signUp(request: MemberSignUpRequest): Member {
         val member = request.toEntity()
-        memberRepository.save(member)
+        return memberRepository.save(member)
     }
 }
