@@ -1,10 +1,20 @@
 package com.example.hcblog.config
 
+import com.example.hcblog.domain.member.UserDetailsImpl
+import com.example.hcblog.service.MemberService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
@@ -14,12 +24,35 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    val memberService: MemberService
+) {
 
     @Bean
-    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
-        return BCryptPasswordEncoder()
+    fun userDetailsService(): UserDetailsService {
+        return UserDetailsService { username ->
+            UserDetailsImpl( memberService.loadMember(username) ?: throw UsernameNotFoundException("등록된 사용자가 없습니다."))
+        }
+
     }
+
+    @Bean
+    fun authenticationProvider(): AuthenticationProvider {
+        val authProvider = DaoAuthenticationProvider()
+        authProvider.setUserDetailsService(userDetailsService())
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder())
+        return authProvider
+    }
+
+    @Bean
+    @Throws(Exception::class)
+    fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager? {
+        return config.authenticationManager
+    }
+
+    @Bean
+    fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
+
     @Bean
     fun webSecurityConfigurerAdapter(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web ->
@@ -35,6 +68,14 @@ class SecurityConfig {
             .authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
             .httpBasic { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
+            .sessionManagement { SessionCreationPolicy.STATELESS }
+            .authenticationProvider(authenticationProvider())       // 괄호 중괄호 차이
+            .logout {
+                it.logoutUrl("member/logout")
+                    .logoutSuccessHandler { request, response, authentication ->
+                        SecurityContextHolder.clearContext()
+                    }
+            }
         return http.build()
     }
 
@@ -51,4 +92,7 @@ class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration)
         return source
     }
+
+
 }
+
