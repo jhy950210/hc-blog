@@ -17,6 +17,7 @@ class MemberService(
 
     fun signUp(request: MemberSignUpRequest): Member {
         val member = request.toEntity()
+        member.password = encryptPassword(member.password)
         return memberRepository.save(member)
     }
 

@@ -1,7 +1,9 @@
 package com.example.hcblog.config
 
 import com.example.hcblog.domain.member.UserDetailsImpl
+import com.example.hcblog.service.CustomUserDetailsService
 import com.example.hcblog.service.MemberService
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,21 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    val memberService: MemberService
+    val customUserDetailsService: CustomUserDetailsService
 ) {
-
-    @Bean
-    fun userDetailsService(): UserDetailsService {
-        return UserDetailsService { username ->
-            UserDetailsImpl( memberService.loadMember(username) ?: throw UsernameNotFoundException("등록된 사용자가 없습니다."))
-        }
-
-    }
 
     @Bean
     fun authenticationProvider(): AuthenticationProvider {
         val authProvider = DaoAuthenticationProvider()
-        authProvider.setUserDetailsService(userDetailsService())
+        authProvider.setUserDetailsService(customUserDetailsService)
         authProvider.setPasswordEncoder(bCryptPasswordEncoder())
         return authProvider
     }
@@ -65,10 +59,15 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .formLogin { it.disable() }
-            .authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
+            .headers{ it -> it.frameOptions { it.sameOrigin() }}
+            .authorizeHttpRequests { auth ->
+                auth.requestMatchers("/members","/login").permitAll()
+                    .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .anyRequest().authenticated()
+            }
             .httpBasic { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
-            .sessionManagement { SessionCreationPolicy.STATELESS }
+//            .sessionManagement { SessionCreationPolicy.STATELESS }
             .authenticationProvider(authenticationProvider())       // 괄호 중괄호 차이
             .logout {
                 it.logoutUrl("member/logout")

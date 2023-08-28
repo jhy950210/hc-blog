@@ -14,8 +14,8 @@ class MemberController(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @GetMapping("/members")
-    fun findAll() = memberService.findAll()
+//    @GetMapping("/members")
+//    fun findAll() = memberService.findAll()
 
     @PostMapping("/members")
     fun signUp(@RequestBody request: MemberSignUpRequest) {
