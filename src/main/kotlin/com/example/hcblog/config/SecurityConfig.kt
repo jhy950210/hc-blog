@@ -59,10 +59,10 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .formLogin { it.disable() }
-            .headers{ it -> it.frameOptions { it.sameOrigin() }}
+            .headers{ it -> it.frameOptions { it.sameOrigin() }}    //h2 콘솔
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/members","/login").permitAll()
-                    .requestMatchers(PathRequest.toH2Console()).permitAll()
+                    .requestMatchers(PathRequest.toH2Console()).permitAll() //h2 콘솔
                 .anyRequest().authenticated()
             }
             .httpBasic { it.disable() }

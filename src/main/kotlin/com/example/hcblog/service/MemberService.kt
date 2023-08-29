@@ -21,10 +21,6 @@ class MemberService(
         return memberRepository.save(member)
     }
 
-    fun loadMember(email : String) : Member? {
-        return memberRepository.findByEmail(email)
-    }
-
     private fun encryptPassword(password: String): String {
         return bCryptPasswordEncoder.encode(password)
     }

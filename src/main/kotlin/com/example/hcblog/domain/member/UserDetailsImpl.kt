@@ -6,7 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails
 
 class UserDetailsImpl(val member: Member?) : UserDetails {
     private val enable = true
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = AuthorityUtils.createAuthorityList(member?.role?.name)
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
+        AuthorityUtils.createAuthorityList(member?.role?.name)
 
     override fun getPassword(): String? = member?.password
 
