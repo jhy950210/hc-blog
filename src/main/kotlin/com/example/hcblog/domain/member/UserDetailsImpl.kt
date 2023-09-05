@@ -1,13 +1,15 @@
 package com.example.hcblog.domain.member
 
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.AuthorityUtils
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class UserDetailsImpl(val member: Member?) : UserDetails {
     private val enable = true
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
-        AuthorityUtils.createAuthorityList(member?.role?.name)
+    override fun getAuthorities(): List<out GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority("ROLE_${member?.role?.name}"))
+    }
+
 
     override fun getPassword(): String? = member?.password
 
@@ -22,3 +24,4 @@ class UserDetailsImpl(val member: Member?) : UserDetails {
     override fun isEnabled(): Boolean = enable
 
 }
+

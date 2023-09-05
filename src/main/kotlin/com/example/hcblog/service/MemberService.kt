@@ -24,4 +24,8 @@ class MemberService(
     private fun encryptPassword(password: String): String {
         return bCryptPasswordEncoder.encode(password)
     }
+
+    fun findByEmail(email : String) : Member? {
+        return memberRepository.findByEmail(email)
+    }
 }
