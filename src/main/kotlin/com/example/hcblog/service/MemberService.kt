@@ -17,10 +17,15 @@ class MemberService(
 
     fun signUp(request: MemberSignUpRequest): Member {
         val member = request.toEntity()
+        member.password = encryptPassword(member.password)
         return memberRepository.save(member)
     }
 
     private fun encryptPassword(password: String): String {
         return bCryptPasswordEncoder.encode(password)
+    }
+
+    fun findByEmail(email : String) : Member? {
+        return memberRepository.findByEmail(email)
     }
 }

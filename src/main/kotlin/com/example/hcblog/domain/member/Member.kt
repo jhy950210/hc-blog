@@ -1,10 +1,7 @@
 package com.example.hcblog.domain.member
 
 import com.example.hcblog.domain.AuditingEntity
-import com.example.hcblog.domain.post.Post
 import jakarta.persistence.*
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 
 @Entity
 @Table(name = "member")
@@ -28,6 +25,9 @@ class Member(
     }
 }
 
-enum class Role {
-    ADMIN, USER
+
+enum class Role() {
+    ADMIN
+    , USER
+    ;
 }
