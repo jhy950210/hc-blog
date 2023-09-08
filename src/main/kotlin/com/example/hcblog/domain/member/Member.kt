@@ -26,8 +26,6 @@ class Member(
 }
 
 
-enum class Role() {
-    ADMIN
-    , USER
-    ;
+enum class Role {
+    ADMIN, USER
 }
