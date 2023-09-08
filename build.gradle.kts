@@ -29,7 +29,7 @@ extra["snippetsDir"] = file("build/generated-snippets")
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
-//	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	// https://mvnrepository.com/artifact/io.github.microutils/kotlin-logging
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -39,6 +39,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+	runtimeOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("org.springframework.security:spring-security-test")
